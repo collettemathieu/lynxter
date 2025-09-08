@@ -2,13 +2,21 @@
   "name": "@org/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start": "nx run hello-cine:serve:production",
+    "start:dev": "nx run hello-cine:serve:development",
+    "build": "nx run hello-cine:build:production",
+    "test": "nx run hello-cine:test",
+    "nx": "nx"
+  },
   "private": true,
   "dependencies": {
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "axios": "^1.6.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0"
   },

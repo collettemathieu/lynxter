@@ -6,6 +6,7 @@
     "targets": {
       "build": {
         "executor": "nx:run-commands",
+        "defaultConfiguration": "production",
         "options": {
           "command": "webpack-cli build",
           "args": [
@@ -14,6 +15,17 @@
           "cwd": "apps/hello-cine"
         },
         "configurations": {
+          "production": {
+            "args": [
+              "--node-env=production"
+            ],
+            "fileReplacements": [
+              {
+                "replace": "apps/hello-cine/src/environments/environment.ts",
+                "with": "apps/hello-cine/src/environments/environment.prod.ts"
+              }
+            ]
+          },
           "development": {
             "args": [
               "--node-env=development"
