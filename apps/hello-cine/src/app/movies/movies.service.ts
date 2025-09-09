@@ -1,37 +1,52 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { type ConfigType } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateActorDto } from './dtos/create-actor.dto';
 import { CreateMovieDto } from './dtos/create-movie.dto';
 import { UpdateMovieDto } from './dtos/update-movie.dto';
+import { Actor } from './entities/actors.entity';
 import { Movie } from './entities/movies.entity';
+import moviesConfig from './movies.config';
 
-@Injectable()
+@Injectable({
+  scope: Scope.DEFAULT,
+})
 export class MoviesService {
-  private movies: Movie[] = [
-    {
-      id: 1,
-      title: 'Inception',
-      releaseDate: new Date('2010-07-16T00:00:00.000Z'),
-      actorList: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Ellen Page'],
-    },
-    {
-      id: 2,
-      title: 'The Matrix',
-      releaseDate: new Date('1999-03-31T00:00:00.000Z'),
-      actorList: ['Keanu Reeves', 'Laurence Fishburne', 'Carrie-Anne Moss'],
-    },
-    {
-      id: 3,
-      title: 'Interstellar',
-      releaseDate: new Date('2014-11-07T00:00:00.000Z'),
-      actorList: ['Matthew McConaughey', 'Anne Hathaway', 'Jessica Chastain'],
-    },
-  ];
+  constructor(
+    @InjectRepository(Movie)
+    private readonly movieRepository: Repository<Movie>,
 
-  findAll() {
-    return this.movies;
+    @InjectRepository(Actor)
+    private readonly actorRepository: Repository<Actor>, // @Inject(DATA_SOURCE) private readonly dataSource: DataSource
+    // private readonly configService: ConfigService,
+    @Inject(moviesConfig.KEY)
+    private readonly moviesConfiguration: ConfigType<typeof moviesConfig>
+  ) {
+    // console.log('Data Source is initialized:', this.dataSource.isInitialized);
+    // console.log('MoviesService instance created');
+
+    // console.log(
+    //   'Database Host:',
+    //   this.configService.get<string>('POSTGRES_HOST')
+    // );
+
+    // console.log('user', this.configService.get<string>('user.name'));
+
+    console.log('Movies Config - foo:', this.moviesConfiguration.foo);
   }
 
-  findOne(id: string) {
-    const movie = this.movies.find((movie) => movie.id === parseInt(id, 10));
+  findAll() {
+    return this.movieRepository.find({
+      relations: ['actorList'],
+    });
+  }
+
+  async findOne(id: number) {
+    const movie = await this.movieRepository.findOne({
+      where: { id },
+      relations: ['actorList'],
+    });
 
     if (movie === undefined || movie === null) {
       //   throw new HttpException(`Movie with ID ${id} not found`, 404);
@@ -42,30 +57,56 @@ export class MoviesService {
     return movie;
   }
 
-  create(createMovieDto: CreateMovieDto) {
-    this.movies.push(createMovieDto as Movie);
-    return createMovieDto;
+  async create(createMovieDto: CreateMovieDto) {
+    const actorList = await Promise.all(
+      createMovieDto.actorList.map((actor) =>
+        this.preloadActorByNickname(actor)
+      )
+    );
+
+    const movie = this.movieRepository.create({ ...createMovieDto, actorList });
+
+    return this.movieRepository.save(movie);
   }
 
-  update(id: string, updateMovieDto: UpdateMovieDto) {
-    const movieIndex = this.movies.findIndex(
-      (movie) => movie.id === parseInt(id, 10)
-    );
-    if (movieIndex === -1) {
-      return null;
+  async update(id: number, updateMovieDto: UpdateMovieDto) {
+    const newActorList =
+      updateMovieDto.actorList === undefined
+        ? undefined
+        : await Promise.all(
+            updateMovieDto.actorList.map((actor) =>
+              this.preloadActorByNickname(actor)
+            )
+          );
+
+    const movie = await this.movieRepository.preload({
+      id,
+      ...updateMovieDto,
+      ...(newActorList === undefined ? {} : { actorList: newActorList }),
+    });
+
+    if (movie === undefined || movie === null) {
+      throw new NotFoundException(`Movie with ID ${id} not found`);
     }
-    this.movies[movieIndex] = { ...this.movies[movieIndex], ...updateMovieDto };
-    return this.movies[movieIndex];
+
+    return this.movieRepository.save(movie);
   }
 
-  remove(id: string) {
-    const movieIndex = this.movies.findIndex(
-      (movie) => movie.id === parseInt(id, 10)
-    );
-    if (movieIndex === -1) {
-      return null;
+  async remove(id: number) {
+    const movie = await this.findOne(id);
+
+    return this.movieRepository.remove(movie);
+  }
+
+  private async preloadActorByNickname(createActorDto: CreateActorDto) {
+    const actor = await this.actorRepository.findOne({
+      where: { nickname: createActorDto.nickname },
+    });
+
+    if (actor !== undefined && actor !== null) {
+      return actor;
     }
-    const removedMovie = this.movies.splice(movieIndex, 1);
-    return removedMovie[0];
+
+    return this.actorRepository.create(createActorDto);
   }
 }

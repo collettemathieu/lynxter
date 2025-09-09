@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsString } from 'class-validator';
+import { IsArray, IsDate, IsString, ValidateNested } from 'class-validator';
+import { CreateActorDto } from './create-actor.dto';
 
 export class CreateMovieDto {
   @IsString()
@@ -9,6 +10,8 @@ export class CreateMovieDto {
   @Type(() => Date)
   releaseDate!: Date;
 
-  @IsString({ each: true })
-  actorList!: string[];
+  @Type(() => CreateActorDto)
+  @IsArray()
+  @ValidateNested()
+  actorList!: CreateActorDto[];
 }

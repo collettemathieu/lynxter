@@ -2,26 +2,29 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  Index,
-  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   VersionColumn,
 } from 'typeorm';
-import { Actor } from './actors.entity';
+import { Movie } from './movies.entity';
 
 @Entity()
-@Index(['title', 'version'])
-export class Movie {
+export class Actor {
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Column()
-  title!: string;
+  firstname!: string;
 
   @Column()
-  releaseDate!: Date;
+  lastname!: string;
+
+  @Column()
+  nickname!: string;
+
+  @Column()
+  age!: number;
 
   @CreateDateColumn()
   createdAt!: Date;
@@ -32,11 +35,8 @@ export class Movie {
   @VersionColumn({ default: 1 })
   version!: number;
 
-  @JoinTable()
-  @ManyToMany((type) => Actor, (actor) => actor.movieList, {
-    cascade: true,
-  })
-  actorList!: Actor[];
+  @ManyToMany((type) => Movie, (movie) => movie.actorList)
+  movieList!: Movie[];
 }
 //Use the format RFC 3339 to generate a date with a timezone.
 //Example: 2023-10-05T14:48:00.000Z

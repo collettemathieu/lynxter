@@ -1,14 +1,4 @@
-import { Type } from 'class-transformer';
-import { IsDate, IsString } from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
+import { CreateMovieDto } from './create-movie.dto';
 
-export class UpdateMovieDto {
-  @IsString()
-  title?: string;
-
-  @IsDate()
-  @Type(() => Date)
-  releaseDate?: Date;
-
-  @IsString({ each: true })
-  actorList?: string[];
-}
+export class UpdateMovieDto extends PartialType(CreateMovieDto) {}
