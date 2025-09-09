@@ -1,5 +1,6 @@
-import { Injectable, Module } from '@nestjs/common';
+import { Injectable, Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Actor } from './entities/actors.entity';
 import { Movie } from './entities/movies.entity';
@@ -69,6 +70,16 @@ export class MoviesReleaseDateFactory {
     //   },
     //   inject: [DATA_SOURCE],
     // },
+
+    {
+      provide: APP_PIPE,
+      useFactory: () =>
+        new ValidationPipe({
+          whitelist: true,
+          forbidNonWhitelisted: true,
+          transform: true,
+        }),
+    },
   ],
   exports: [MoviesService],
 })

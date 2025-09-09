@@ -18,6 +18,13 @@ import { MoviesService } from './movies.service';
 import { MOVIES_RELEASE_DATE_TOKEN } from './movies.static';
 
 @ApiTags('movies')
+// @UsePipes(
+//   new ValidationPipe({
+//     whitelist: true,
+//     forbidNonWhitelisted: true,
+//     transform: true,
+//   })
+// )
 @Controller({
   path: 'movies',
   version: '1',
@@ -32,6 +39,7 @@ export class MoviesController {
 
   @ApiResponse({ status: 200, description: 'Return all movies.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
+  // @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   @HttpCode(HttpStatus.OK)
   findAll(@Query() paginationQuery: { limit: number; offset: number }) {

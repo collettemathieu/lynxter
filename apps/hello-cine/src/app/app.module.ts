@@ -6,6 +6,7 @@ import appConfig from './app.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MoviesModule } from './movies/movies.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { MoviesModule } from './movies/movies.module';
         synchronize: true, // never use TRUE in production!
       }),
     }),
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -3,7 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
@@ -18,14 +18,6 @@ async function bootstrap() {
   const globalPrefix = environment.production === true ? 'api' : '';
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || 3000;
-
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    })
-  );
 
   const options = new DocumentBuilder()
     .setTitle('Hello Cine API')
