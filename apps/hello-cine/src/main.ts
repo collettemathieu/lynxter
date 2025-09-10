@@ -7,6 +7,9 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
+import { HttpExceptionFilter } from './app/common/filters/http-exception.filter';
+import { TimeoutInterceptor } from './app/common/interceptors/timeout.interceptor';
+import { WrapResponseInterceptor } from './app/common/interceptors/wrap-response.interceptor';
 import { environment } from './environments/environment';
 
 async function bootstrap() {
@@ -17,6 +20,14 @@ async function bootstrap() {
 
   const globalPrefix = environment.production === true ? 'api' : '';
   app.setGlobalPrefix(globalPrefix);
+
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  app.useGlobalInterceptors(
+    new WrapResponseInterceptor(),
+    new TimeoutInterceptor()
+  );
+
   const port = process.env.PORT || 3000;
 
   const options = new DocumentBuilder()

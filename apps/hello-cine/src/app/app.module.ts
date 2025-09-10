@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import appConfig from './app.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CommonModule } from './common/common.module';
 import { MoviesModule } from './movies/movies.module';
 import { UsersModule } from './users/users.module';
 
@@ -36,6 +37,7 @@ import { UsersModule } from './users/users.module';
       }),
     }),
     UsersModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],

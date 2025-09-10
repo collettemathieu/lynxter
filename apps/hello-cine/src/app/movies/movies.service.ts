@@ -16,7 +16,6 @@ export class MoviesService {
   constructor(
     @InjectRepository(Movie)
     private readonly movieRepository: Repository<Movie>,
-
     @InjectRepository(Actor)
     private readonly actorRepository: Repository<Actor>, // @Inject(DATA_SOURCE) private readonly dataSource: DataSource
     // private readonly configService: ConfigService,

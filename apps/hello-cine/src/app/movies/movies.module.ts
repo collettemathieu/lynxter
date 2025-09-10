@@ -2,6 +2,7 @@ import { Injectable, Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CommonModule } from '../common/common.module';
 import { Actor } from './entities/actors.entity';
 import { Movie } from './entities/movies.entity';
 import moviesConfig from './movies.config';
@@ -21,6 +22,7 @@ export class MoviesReleaseDateFactory {
 
 @Module({
   imports: [
+    CommonModule,
     ConfigModule.forFeature(moviesConfig),
     TypeOrmModule.forFeature([Movie, Actor]),
     // DataBaseModule.register({
@@ -77,7 +79,7 @@ export class MoviesReleaseDateFactory {
         new ValidationPipe({
           whitelist: true,
           forbidNonWhitelisted: true,
-          transform: true,
+          transform: false,
         }),
     },
   ],
