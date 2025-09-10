@@ -10,7 +10,7 @@
     "emitDeclarationOnly": false,
     "target": "es2021"
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "setup-jest-env.ts"],
   "exclude": [
     "out-tsc",
     "dist",

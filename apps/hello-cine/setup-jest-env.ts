@@ -1,0 +1,9 @@
+process.env.API_KEY = '8e548ca2-f785-41cf-b896-eea13aa40003';
+process.env.POSTGRES_HOST = 'localhost';
+process.env.POSTGRES_DB = 'postgres';
+process.env.POSTGRES_USER = 'admin';
+process.env.POSTGRES_PASSWORD = 'secret';
+process.env.POSTGRES_PORT = '5433';
+process.env.PGADMIN_DEFAULT_EMAIL = 'admin@linuxhint.com';
+process.env.PGADMIN_DEFAULT_PASSWORD = 'secret';
+process.env.PGADMIN_LISTEN_PORT = '80';

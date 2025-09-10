@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ObjectLiteral, Repository } from 'typeorm';
@@ -48,5 +49,38 @@ describe('MoviesService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('findOne', () => {
+    describe('When movie with Id exists', () => {
+      it('Should return the movie object', async () => {
+        const movieId = 1;
+
+        const expectedMovie = {};
+
+        movieRepository.findOne?.mockReturnValue(expectedMovie);
+
+        const movie = await service.findOne(movieId);
+
+        expect(movie).toEqual(expectedMovie);
+      });
+    });
+
+    describe('Otherwise', () => {
+      it('should throw the "NotFoundException"', async () => {
+        const movieId = 1;
+
+        movieRepository.findOne?.mockReturnValue(undefined);
+
+        try {
+          await service.findOne(movieId);
+        } catch (error) {
+          expect(error).toBeInstanceOf(NotFoundException);
+          expect((error as NotFoundException).message).toEqual(
+            `Movie with ID ${movieId} not found`
+          );
+        }
+      });
+    });
   });
 });
